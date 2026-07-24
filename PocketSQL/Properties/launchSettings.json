@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PocketSQL": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"C:\\Temp\\orders.json\""
+    }
+  }
+}
