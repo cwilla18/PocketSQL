@@ -51,22 +51,22 @@ namespace PocketSQL.Lexing
             int start = _position;
             int line = _line;
             int col = _column;
-            char c = _inputSpan[_position];
+            char character = CharFromIndex();
 
             // Identifiers / keywords or bare names
-            if (IsIdentifierStart(c))
+            if (IsIdentifierStart(character))
             { 
                 return ReadIdentifierOrKeyword(start, line, col); 
             }
 
             // Numbers
-            if (char.IsDigit(c))
+            if (char.IsDigit(character))
             {
                 return ReadNumber(start, line, col);
             }
 
             // String literal
-            if (c == '\'' || c == '"')
+            if (character == '\'' || character == '"')
             {
                 return ReadString(start, line, col);
             }
@@ -79,7 +79,7 @@ namespace PocketSQL.Lexing
         {
             while (_position < _inputSpan.Length)
             {
-                char character = _inputSpan[_position];
+                char character = CharFromIndex();
 
                 if (char.IsWhiteSpace(character))
                 {
@@ -191,7 +191,7 @@ namespace PocketSQL.Lexing
 
         private Token ReadString(int start, int line, int col)
         {
-            char quote = _inputSpan[_position];
+            char quote = CharFromIndex();
             int pos = _position + 1;
 
             while (pos < _inputSpan.Length)
@@ -222,7 +222,7 @@ namespace PocketSQL.Lexing
 
         private Token ReadOperatorOrPunctuator(int start, int line, int col)
         {
-            char character = _inputSpan[_position];
+            char character = CharFromIndex();
 
             // Two-char operators
             if (_position + 1 < _inputSpan.Length)
@@ -248,8 +248,6 @@ namespace PocketSQL.Lexing
             }
 
             // Single-char mapping
-
-
             switch (character)
             {
                 case ',': 
@@ -313,6 +311,8 @@ namespace PocketSQL.Lexing
 
             else _column++;
         }
+
+        private char CharFromIndex() => _inputSpan[_position];
 
         private static bool IsIdentifierStart(char c) => char.IsLetter(c) || c == '_' || c == '@';
         private static bool IsIdentifierPart(char c) => char.IsLetterOrDigit(c) || c == '_' || c == '@' || c == '$';
