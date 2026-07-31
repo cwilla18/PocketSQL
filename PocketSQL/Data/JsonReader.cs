@@ -41,10 +41,7 @@ namespace PocketSQL.Data
                 throw new InvalidDataException("Unable to parse Json file: deserialization returned null.");
             }
 
-            var rows = jsonList
-                .Where(item => item is not null)
-                .Select(item => (IDictionary<string, object?>)item!)
-                .ToList();
+            var rows = jsonList.Where(item => item is not null).Select(item => (IDictionary<string, object?>)item!).ToList();
 
             // Column order follows first appearance across all rows.
             var headers = rows.SelectMany(item => item.Keys).Distinct().ToList();
@@ -67,17 +64,9 @@ namespace PocketSQL.Data
 
         }
 
-        /// <summary>
-        /// Infers a column's type from the non-null values present for <paramref name="key"/>.
-        /// Uses that single type when all rows agree, otherwise falls back to object.
-        /// </summary>
         private static Type InferColumnType(IEnumerable<IDictionary<string, object?>> rows, string key)
         {
-            var distinctTypes = rows
-                .Where(r => r.TryGetValue(key, out var value) && value is not null)
-                .Select(r => r[key]!.GetType())
-                .Distinct()
-                .ToList();
+            var distinctTypes = rows.Where(r => r.TryGetValue(key, out var value) && value is not null).Select(r => r[key]!.GetType()).Distinct().ToList();
 
             return distinctTypes.Count == 1 ? distinctTypes[0] : typeof(object);
         }

@@ -72,12 +72,6 @@ namespace PocketSQL.Data
             _logger.LogInformation($"CSV file processed successfully: {filePath.FullName}");
             return DataTable;
         }
-
-        /// <summary>
-        /// Splits a single CSV line, honouring double-quoted fields (which may contain
-        /// commas) and escaped quotes ("") within them. Embedded newlines are not
-        /// supported because the file is read line-by-line.
-        /// </summary>
         private static List<string> ParseLine(string line)
         {
             var fields = new List<string>();
@@ -86,10 +80,10 @@ namespace PocketSQL.Data
 
             for (int i = 0; i < line.Length; i++)
             {
-                var c = line[i];
+                var character = line[i];
                 if (inQuotes)
                 {
-                    if (c == '"')
+                    if (character == '"')
                     {
                         if (i + 1 < line.Length && line[i + 1] == '"')
                         {
@@ -103,21 +97,21 @@ namespace PocketSQL.Data
                     }
                     else
                     {
-                        current.Append(c);
+                        current.Append(character);
                     }
                 }
-                else if (c == '"')
+                else if (character == '"')
                 {
                     inQuotes = true;
                 }
-                else if (c == ',')
+                else if (character == ',')
                 {
                     fields.Add(current.ToString());
                     current.Clear();
                 }
                 else
                 {
-                    current.Append(c);
+                    current.Append(character);
                 }
             }
 
@@ -125,10 +119,6 @@ namespace PocketSQL.Data
             return fields;
         }
 
-        /// <summary>
-        /// Picks the narrowest type that fits every non-empty value in the column,
-        /// falling back to string when the values are mixed or empty.
-        /// </summary>
         private static Type InferColumnType(IEnumerable<string> values)
         {
             var nonEmpty = values

@@ -55,19 +55,19 @@ class Program
             }
 
             logger.LogInformation($"Reading file: {filePath.FullName}");
+            
+            GenerateTable generateTable = new(logger);
+            var dataTable = generateTable.PopulateTableData(filePath);
 
-            var dataTable = new Table();
-
-            IFileProcessor reader = Path.GetExtension(filePath.FullName).ToLowerInvariant() switch
+            if(dataTable is null)
             {
-                ".json" => new JsonReader(dataTable, logger),
-                ".csv" => new CsvReader(dataTable, logger),
-                _ => throw new NotSupportedException($"File extension '{Path.GetExtension(filePath.FullName)}' is not supported.")
-            };
+                logger.LogError("Failed to populate data table from the file.");
+                return;
+            }
 
-            dataTable = reader.ProcessFile(filePath);
+            QueryData queryData = new(dataTable, logger);
+            queryData.Query();
 
-            //TODO implement logic with the dataTable, such as executing SQL queries or displaying the data in the console.
         }
         catch (Exception ex)
         {
